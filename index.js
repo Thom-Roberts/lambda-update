@@ -1,7 +1,7 @@
 const control = require('./control');
 
 exports.handler = async (event) => {
-	let string = control.main();
+	let string = await control.RunSelect();
 
 	const response = {
 		statusCode: 200,
