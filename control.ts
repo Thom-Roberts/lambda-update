@@ -25,3 +25,10 @@ export function RunSelect() {
 		});
 	});
 }
+
+export async function GetMembersAndStats() {
+	let clanMembers = await GetClanMembers();
+	let stats = await Promise.all(clanMembers.map(member => {
+		return GetHistoricalStats(member);
+	}));
+}

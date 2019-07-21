@@ -8,6 +8,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const AWS = __importStar(require("aws-sdk"));
+const ClanRequests_1 = require("./ClanRequests");
+const Stats_1 = require("./Stats");
 AWS.config.update({
     accessKeyId: process.env.accessKeyId,
     secretAccessKey: process.env.secretAccessKey,
@@ -31,3 +33,10 @@ function RunSelect() {
     });
 }
 exports.RunSelect = RunSelect;
+async function GetMembersAndStats() {
+    let clanMembers = await ClanRequests_1.GetClanMembers();
+    let stats = await Promise.all(clanMembers.map(member => {
+        return Stats_1.GetHistoricalStats(member);
+    }));
+}
+exports.GetMembersAndStats = GetMembersAndStats;
