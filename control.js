@@ -40,3 +40,13 @@ async function GetMembersAndStats() {
     }));
 }
 exports.GetMembersAndStats = GetMembersAndStats;
+// Selecting the members table, and for each entry that doesn't have someone, add them to the list
+function UpdateMembersInDb(members) {
+    return new Promise((resolve, reject) => {
+    });
+}
+// Selecting the stats table, and updating each entry / adding it if it isn't there
+function UpdateStatsInDb() {
+    return new Promise((resolve, reject) => {
+    });
+}
