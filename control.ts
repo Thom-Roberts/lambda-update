@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { GetClanMembers } from "./ClanRequests";
+import { GetHistoricalStats } from "./Stats";
 
 AWS.config.update({
 	accessKeyId: process.env.accessKeyId,
