@@ -8,7 +8,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = __importStar(require("request"));
-const BUNGIEAPIKEY = 'fc470e42da39445380152053f1a86267';
 /**
  * Gets stats for one member
  * @param member
@@ -18,7 +17,7 @@ function GetHistoricalStats(member) {
         const options = {
             url: `https://www.bungie.net/Platform/Destiny2/${member.membershipType}/Account/${member.membershipId}/Stats/`,
             headers: {
-                "x-api-key": BUNGIEAPIKEY,
+                "x-api-key": process.env.bungieApiKey,
             },
         };
         request.get(options, (err, res, body) => {

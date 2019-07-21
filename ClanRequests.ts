@@ -1,14 +1,13 @@
 import * as request from 'request';
 import { Member } from "./interfaces";
 const ClanId = '407685';
-const BUNGIEAPIKEY = 'fc470e42da39445380152053f1a86267';
 
 export function GetClanMembers() : Promise<Member[]> {
 	return new Promise((resolve, reject) => {
 		const options = {
          'url': `https://www.bungie.net/Platform/GroupV2/${ClanId}/Members/`,
          'headers': {
-            'x-api-key': BUNGIEAPIKEY,
+            'x-api-key': process.env.bungieApiKey,
          },
       };
 

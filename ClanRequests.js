@@ -9,13 +9,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = __importStar(require("request"));
 const ClanId = '407685';
-const BUNGIEAPIKEY = 'fc470e42da39445380152053f1a86267';
 function GetClanMembers() {
     return new Promise((resolve, reject) => {
         const options = {
             'url': `https://www.bungie.net/Platform/GroupV2/${ClanId}/Members/`,
             'headers': {
-                'x-api-key': BUNGIEAPIKEY,
+                'x-api-key': process.env.bungieApiKey,
             },
         };
         request.get(options, (err, res, body) => {

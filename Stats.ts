@@ -1,7 +1,6 @@
 import * as request from "request";
 import { Member } from "./Interfaces";
 import { Stats } from "./Interfaces";
-const BUNGIEAPIKEY = 'fc470e42da39445380152053f1a86267';
 
 /**
  * Gets stats for one member
@@ -12,7 +11,7 @@ export function GetHistoricalStats(member: Member): Promise<Stats> {
 		const options = {
 			url: `https://www.bungie.net/Platform/Destiny2/${member.membershipType}/Account/${member.membershipId}/Stats/`,
 			headers: {
-				"x-api-key": BUNGIEAPIKEY,
+				"x-api-key": process.env.bungieApiKey,
 			},
 		};
 
