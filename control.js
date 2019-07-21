@@ -33,7 +33,12 @@ function RunSelect() {
     });
 }
 exports.RunSelect = RunSelect;
+async function GetMembers() {
+    return await ClanRequests_1.GetClanMembers();
+}
+exports.GetMembers = GetMembers;
 async function GetMembersAndStats() {
+    // TODO: Get the clan members into their Update members function ASAP
     let clanMembers = await ClanRequests_1.GetClanMembers();
     let stats = await Promise.all(clanMembers.map(member => {
         return Stats_1.GetHistoricalStats(member);
