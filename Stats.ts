@@ -3,6 +3,10 @@ import { Member } from "./Interfaces";
 import { Stats } from "./Interfaces";
 const BUNGIEAPIKEY = 'fc470e42da39445380152053f1a86267';
 
+/**
+ * Gets stats for one member
+ * @param member 
+ */
 export function GetHistoricalStats(member: Member): Promise<Stats> {
 	return new Promise((resolve, reject) => {
 		const options = {

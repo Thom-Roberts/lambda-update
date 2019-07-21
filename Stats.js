@@ -9,6 +9,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = __importStar(require("request"));
 const BUNGIEAPIKEY = 'fc470e42da39445380152053f1a86267';
+/**
+ * Gets stats for one member
+ * @param member
+ */
 function GetHistoricalStats(member) {
     return new Promise((resolve, reject) => {
         const options = {
