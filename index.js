@@ -3,11 +3,11 @@ const control = require('./control');
 exports.handler = async (event) => {
 	try {
 		// let string = await control.RunSelect();
-		let string = await control.GetMembers();
+		await control.main();
 		
 		const response = {
 			statusCode: 200,
-			body: JSON.stringify(string),
+			body: JSON.stringify('success'),
 		};
 		return response;
 	}
