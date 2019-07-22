@@ -36,7 +36,7 @@ function GetHistoricalStats(member) {
             else {
                 let temp = JSON.parse(body);
                 let values = temp.Response.mergedAllCharacters.results;
-                let returnStats = {};
+                let returnStats = { membershipId: member.membershipId };
                 // Test if response has PvE/PvP stats
                 if (Object.keys(values.allPvE).length !== 0) {
                     //append the PvE stuff
