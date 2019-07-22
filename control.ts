@@ -65,8 +65,8 @@ function UpdateMembersInDb(members: Member[]): Promise<void> {
 
 		Promise.all(proms).then(() => {
 			resolve();
-		}).catch(() => {
-			reject()
+		}).catch((e) => {
+			reject(e);
 		});
 	});
 }
@@ -78,17 +78,26 @@ function UpdateStatsInDb() {
 	});
 }
 
-function SendDbUpdateRequest(tableName: string, items: unknown[]): Promise<void> {
+// See format for batch update request here: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#batchWriteItem-property
+function SendDbUpdateRequest(tableName: string, items: any[]): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const params: any = {
 			'RequestItems': {
-				[tableName]: [
+				[tableName]: 
 					items.map(item => {
+						let temp: any = {};
+						Object.keys(item).forEach(key => {
+							temp[key] = {
+								S: item[key].toString()
+							};
+						});
 						return {
-							'Item': item
+							'PutRequest': {
+								'Item': temp
+							}
 						};
 					})
-				],
+				,
 			},
 		};
 
