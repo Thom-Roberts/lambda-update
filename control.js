@@ -23,6 +23,12 @@ async function main() {
     await UpdateMembersInDb(members);
     // Start updating users table
     // Start collecting stats for each user
+    let statsProm = [];
+    members.forEach(member => {
+        statsProm.push(Stats_1.GetHistoricalStats(member));
+    });
+    let stats = await Promise.all(statsProm);
+    await UpdateStatsInDb(stats);
     // Start updating stats table
     // Finish once both updates are finished
     // If there are any errors, throw them
@@ -66,9 +72,57 @@ function UpdateMembersInDb(members) {
         });
     });
 }
-// Selecting the stats table, and updating each entry / adding it if it isn't there
-function UpdateStatsInDb() {
+function UpdateStatsInDb(stats) {
     return new Promise((resolve, reject) => {
+        const maxChunkSize = 25;
+        let proms = [];
+        for (let i = 0; i < stats.length; i += maxChunkSize) {
+            let tempArray = stats.slice(i, i + maxChunkSize);
+            proms.push(SendUpdateStatsInDb('MemberStats', tempArray));
+        }
+        Promise.all(proms).then(() => {
+            resolve();
+        }).catch((e) => {
+            reject(e);
+        });
+    });
+}
+// Selecting the stats table, and updating each entry / adding it if it isn't there
+function SendUpdateStatsInDb(tableName, stats) {
+    return new Promise((resolve, reject) => {
+        const params = {
+            'RequestItems': {
+                [tableName]: stats.map(stat => {
+                    let temp = {};
+                    temp.membershipId = {
+                        S: stat.membershipId.toString()
+                    };
+                    if (Object.prototype.hasOwnProperty.call(stat, 'pve')) {
+                        temp.pve = {
+                            S: JSON.stringify(stat.pve)
+                        };
+                    }
+                    if (Object.prototype.hasOwnProperty.call(stat, 'pvp')) {
+                        temp.pvp = {
+                            S: JSON.stringify(stat.pve)
+                        };
+                    }
+                    return {
+                        'PutRequest': {
+                            'Item': temp
+                        }
+                    };
+                }),
+            }
+        };
+        dynamoDb.batchWriteItem(params, (err, data) => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve();
+            }
+        });
     });
 }
 // See format for batch update request here: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB.html#batchWriteItem-property

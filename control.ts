@@ -19,7 +19,14 @@ export async function main(): Promise<void> {
 	await UpdateMembersInDb(members);
 	// Start updating users table
 	// Start collecting stats for each user
+	let statsProm: Promise<Stats>[] = [];
+	members.forEach(member => {
+		statsProm.push(GetHistoricalStats(member));
+	});
 
+	let stats = await Promise.all(statsProm);
+
+	await UpdateStatsInDb(stats);
 	// Start updating stats table
 
 	// Finish once both updates are finished
@@ -71,10 +78,63 @@ function UpdateMembersInDb(members: Member[]): Promise<void> {
 	});
 }
 
+function UpdateStatsInDb(stats: Stats[]) {
+	return new Promise((resolve, reject) => {
+		const maxChunkSize = 25;
+		let proms :Promise<void>[] = [];
+		for(let i = 0; i < stats.length; i += maxChunkSize) {
+			let tempArray = stats.slice(i, i + maxChunkSize);
+
+			proms.push(SendUpdateStatsInDb('MemberStats', tempArray));
+		}
+
+		Promise.all(proms).then(() => {
+			resolve();
+		}).catch((e) => {
+			reject(e);
+		});
+	});
+}
+
 // Selecting the stats table, and updating each entry / adding it if it isn't there
-function UpdateStatsInDb() {
-	return new Promise<void>((resolve, reject) => {
-		
+function SendUpdateStatsInDb(tableName: string, stats: Stats[]) : Promise<void> {
+	return new Promise((resolve, reject) => {
+		const params: any = {
+			'RequestItems': {
+				[tableName]: 
+					stats.map(stat => {
+						let temp: any = {};
+						temp.membershipId = {
+							S: stat.membershipId.toString()
+						};
+						if(Object.prototype.hasOwnProperty.call(stat, 'pve')) {
+							temp.pve = {
+								S: JSON.stringify(stat.pve)
+							};
+						}
+						if(Object.prototype.hasOwnProperty.call(stat, 'pvp')) {
+							temp.pvp = {
+								S: JSON.stringify(stat.pve)
+							};
+						}
+						return {
+							'PutRequest': {
+								'Item': temp
+							}
+						};
+					})
+				,
+			}
+		}
+
+		dynamoDb.batchWriteItem(params, (err, data) => {
+			if(err) {
+				reject(err);
+			}
+			else {
+				resolve();
+			}
+		});
 	});
 }
 
