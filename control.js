@@ -104,7 +104,7 @@ function SendUpdateStatsInDb(tableName, stats) {
                     }
                     if (Object.prototype.hasOwnProperty.call(stat, 'pvp')) {
                         temp.pvp = {
-                            S: JSON.stringify(stat.pve)
+                            S: JSON.stringify(stat.pvp)
                         };
                     }
                     return {
