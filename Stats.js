@@ -59,6 +59,7 @@ function GetHistoricalStats(member) {
                         assists: values.allPvP.allTime.assists.basic.value,
                         kills: values.allPvP.allTime.kills.basic.value,
                         timePlayed: values.allPvP.allTime.secondsPlayed.basic.displayValue,
+                        timePlayedNumber: values.allPvP.allTime.secondsPlayed.baic.value,
                         deaths: values.allPvP.allTime.deaths.basic.value,
                         bestSingleGameKils: values.allPvP.allTime.bestSingleGameKills.basic.value,
                         opponentsDefeated: values.allPvP.allTime.opponentsDefeated.basic.value,
