@@ -4,6 +4,11 @@ export interface Member {
 	displayName: string;
 }
 
+export interface Profile {
+	Stats: Stats;
+	MostPlayedCharacter: Character;
+}
+
 // Just the most played character
 export interface Character { // Get profile
 	characterId: string; // Most played id
