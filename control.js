@@ -19,24 +19,29 @@ AWS.config.update({
 var dynamoDb = new AWS.DynamoDB;
 var docClient = new AWS.DynamoDB.DocumentClient();
 async function main() {
-    // Collect users
-    let members = await ClanRequests_1.GetClanMembers();
-    await UpdateMembersInDb(members);
-    // Start updating users table
-    // Start collecting stats for each user
-    let statsProm = [];
-    members.forEach(member => {
-        statsProm.push(Stats_1.GetHistoricalStats(member));
-    });
-    let stats = await Promise.all(statsProm);
-    await UpdateStatsInDb(stats);
-    let profileProms = members.map(member => {
-        return profile_1.GetProfile(member);
-    });
-    let profiles = await Promise.all(profileProms);
-    // Finish once both updates are finished
-    // If there are any errors, throw them
-    return;
+    try {
+        // Collect users
+        let members = await ClanRequests_1.GetClanMembers();
+        await UpdateMembersInDb(members);
+        // Start updating users table
+        // Start collecting stats for each user
+        let statsProms = members.map(member => {
+            return Stats_1.GetHistoricalStats(member);
+        });
+        let mpCharacterProms = members.map(member => {
+            return profile_1.GetProfile(member);
+        });
+        // TODO: Combine these two promise.all statements
+        let stats = await Promise.all(statsProms);
+        let mpCharacters = await Promise.all(mpCharacterProms);
+        await UpdateStatsInDb(stats, mpCharacters);
+        // Finish once both updates are finished
+        // If there are any errors, throw them
+        return;
+    }
+    catch (e) {
+        throw e;
+    }
 }
 exports.main = main;
 function RunSelect() {
@@ -76,13 +81,14 @@ function UpdateMembersInDb(members) {
         });
     });
 }
-function UpdateStatsInDb(stats) {
+function UpdateStatsInDb(stats, mpCharacters) {
     return new Promise((resolve, reject) => {
         const maxChunkSize = 25;
         let proms = [];
         for (let i = 0; i < stats.length; i += maxChunkSize) {
             let tempArray = stats.slice(i, i + maxChunkSize);
-            proms.push(SendUpdateStatsInDb('MemberStats', tempArray));
+            let tempArray2 = mpCharacters.slice(i, i + maxChunkSize);
+            proms.push(SendUpdateStatsInDb('MemberStats', tempArray, tempArray2));
         }
         Promise.all(proms).then(() => {
             resolve();
@@ -92,11 +98,11 @@ function UpdateStatsInDb(stats) {
     });
 }
 // Selecting the stats table, and updating each entry / adding it if it isn't there
-function SendUpdateStatsInDb(tableName, stats) {
+function SendUpdateStatsInDb(tableName, stats, mpCharacter) {
     return new Promise((resolve, reject) => {
         const params = {
             'RequestItems': {
-                [tableName]: stats.map(stat => {
+                [tableName]: stats.map((stat, index) => {
                     let temp = {};
                     temp.membershipId = {
                         S: stat.membershipId.toString()
@@ -111,6 +117,9 @@ function SendUpdateStatsInDb(tableName, stats) {
                             S: JSON.stringify(stat.pvp)
                         };
                     }
+                    temp.mostPlayedCharacter = {
+                        S: JSON.stringify(mpCharacter[index])
+                    };
                     return {
                         'PutRequest': {
                             'Item': temp

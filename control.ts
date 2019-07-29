@@ -14,31 +14,37 @@ var dynamoDb = new AWS.DynamoDB;
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 export async function main(): Promise<void> {
-	// Collect users
-	let members = await GetClanMembers();
+	try {
+		// Collect users
+		let members = await GetClanMembers();
 
-	await UpdateMembersInDb(members);
-	// Start updating users table
-	// Start collecting stats for each user
-	let statsProms = members.map(member => {
-		return GetHistoricalStats(member);
-	});
+		await UpdateMembersInDb(members);
+		// Start updating users table
+		// Start collecting stats for each user
+		let statsProms = members.map(member => {
+			return GetHistoricalStats(member);
+		});
 
-	let mpCharacterProms = members.map(member => {
-		return GetProfile(member);
-	});
+		let mpCharacterProms = members.map(member => {
+			return GetProfile(member);
+		});
 
-	// TODO: Combine these two promise.all statements
-	let stats = await Promise.all(statsProms);
-	let mpCharacters = await Promise.all(mpCharacterProms);	
+		// TODO: Combine these two promise.all statements
+		let stats = await Promise.all(statsProms);
+		let mpCharacters = await Promise.all(mpCharacterProms);	
+
+		await UpdateStatsInDb(stats, mpCharacters);
+
+		// Finish once both updates are finished
+
+		// If there are any errors, throw them
+
+		return;
+	}
+	catch(e) {
+		throw e;
+	}
 	
-	await UpdateStatsInDb(stats, mpCharacters);
-	
-	// Finish once both updates are finished
-
-	// If there are any errors, throw them
-
-	return;
 }
 
 export function RunSelect() {
@@ -107,7 +113,7 @@ function SendUpdateStatsInDb(tableName: string, stats: Stats[], mpCharacter: Cha
 		const params: any = {
 			'RequestItems': {
 				[tableName]: 
-					stats.map(stat => {
+					stats.map((stat, index) => {
 						let temp: any = {};
 						temp.membershipId = {
 							S: stat.membershipId.toString()
@@ -123,7 +129,7 @@ function SendUpdateStatsInDb(tableName: string, stats: Stats[], mpCharacter: Cha
 							};
 						}
 						temp.mostPlayedCharacter = {
-							S: JSON.stringify(mpCharacter)
+							S: JSON.stringify(mpCharacter[index])
 						}
 
 						return {
