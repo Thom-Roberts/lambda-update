@@ -6,7 +6,7 @@ export interface Member {
 
 // Just the most played character
 export interface Character { // Get profile
-	characterIds: string; // Do I even need the other yet?
+	characterId: string; // Most played id
 	class: string; // Should be Titan, Hunter, or Warlock
 	minutesPlayed: number;
 	emblemLocation: string; // Append the https://www.bungie.net before pushing it up
