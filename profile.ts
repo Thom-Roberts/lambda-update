@@ -6,7 +6,7 @@ export function GetProfile(member: Member): Promise<Character> {
 		const options = {
 			url: `https://www.bungie.net/Platform/Destiny2/${member.membershipType}/Profile/${member.membershipId}/?components=100,200`,
 			headers: {
-				'x-api-key': process.env.bungieApiKey
+				'x-api-key': process.env.bungieApiKey,
 			}
 		};
 
@@ -35,17 +35,17 @@ export function GetProfile(member: Member): Promise<Character> {
 				};
 				let responseObj = temp.Response.characters.data;
 				for(let charId in responseObj) {
-					let charClass: string = '';
 					// If the next character has more time played, then set them up as larger
 					if(parseInt(responseObj[charId].minutesPlayedTotal) > character.minutesPlayed) {
+						let charClass: string = '';
 						switch(responseObj[charId].classHash) {
-							case '2271682572': 
+							case 2271682572: 
 								charClass = 'Warlock';
 								break;
-							case '3655393761':
+							case 3655393761:
 								charClass = 'Titan';
 								break;
-							case '671679327':
+							case 671679327:
 								charClass = 'Hunter';
 								break;
 							default:
@@ -66,4 +66,4 @@ export function GetProfile(member: Member): Promise<Character> {
 			}
 		});
 	});
-} 
+}
