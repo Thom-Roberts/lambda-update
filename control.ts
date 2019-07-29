@@ -2,7 +2,7 @@ import * as AWS from 'aws-sdk';
 import { GetClanMembers } from "./ClanRequests";
 import { GetHistoricalStats } from "./Stats";
 import { GetProfile } from "./profile";
-import { Member, Stats } from "./interfaces";
+import { Member, Stats, Character } from "./interfaces";
 
 AWS.config.update({
 	accessKeyId: process.env.accessKeyId,
@@ -20,23 +20,20 @@ export async function main(): Promise<void> {
 	await UpdateMembersInDb(members);
 	// Start updating users table
 	// Start collecting stats for each user
-	let statsProm: Promise<Stats>[] = [];
-	members.forEach(member => {
-		statsProm.push(GetHistoricalStats(member));
+	let statsProms = members.map(member => {
+		return GetHistoricalStats(member);
 	});
 
-	let stats = await Promise.all(statsProm);
-
-	await UpdateStatsInDb(stats);
-
-	let profileProms = members.map(member => {
+	let mpCharacterProms = members.map(member => {
 		return GetProfile(member);
 	});
 
-	let profiles = await Promise.all(profileProms);
-
+	// TODO: Combine these two promise.all statements
+	let stats = await Promise.all(statsProms);
+	let mpCharacters = await Promise.all(mpCharacterProms);	
 	
-
+	await UpdateStatsInDb(stats, mpCharacters);
+	
 	// Finish once both updates are finished
 
 	// If there are any errors, throw them
@@ -86,14 +83,14 @@ function UpdateMembersInDb(members: Member[]): Promise<void> {
 	});
 }
 
-function UpdateStatsInDb(stats: Stats[]) {
+function UpdateStatsInDb(stats: Stats[], mpCharacters: Character[]) {
 	return new Promise((resolve, reject) => {
 		const maxChunkSize = 25;
 		let proms :Promise<void>[] = [];
 		for(let i = 0; i < stats.length; i += maxChunkSize) {
 			let tempArray = stats.slice(i, i + maxChunkSize);
-
-			proms.push(SendUpdateStatsInDb('MemberStats', tempArray));
+			let tempArray2 = mpCharacters.slice(i, i + maxChunkSize);
+			proms.push(SendUpdateStatsInDb('MemberStats', tempArray, tempArray2));
 		}
 
 		Promise.all(proms).then(() => {
@@ -105,7 +102,7 @@ function UpdateStatsInDb(stats: Stats[]) {
 }
 
 // Selecting the stats table, and updating each entry / adding it if it isn't there
-function SendUpdateStatsInDb(tableName: string, stats: Stats[]) : Promise<void> {
+function SendUpdateStatsInDb(tableName: string, stats: Stats[], mpCharacter: Character[]) : Promise<void> {
 	return new Promise((resolve, reject) => {
 		const params: any = {
 			'RequestItems': {
@@ -125,6 +122,10 @@ function SendUpdateStatsInDb(tableName: string, stats: Stats[]) : Promise<void> 
 								S: JSON.stringify(stat.pvp)
 							};
 						}
+						temp.mostPlayedCharacter = {
+							S: JSON.stringify(mpCharacter)
+						}
+
 						return {
 							'PutRequest': {
 								'Item': temp
