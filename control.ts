@@ -1,6 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { GetClanMembers } from "./ClanRequests";
 import { GetHistoricalStats } from "./Stats";
+import { GetProfile } from "./profile";
 import { Member, Stats } from "./interfaces";
 
 AWS.config.update({
@@ -27,7 +28,14 @@ export async function main(): Promise<void> {
 	let stats = await Promise.all(statsProm);
 
 	await UpdateStatsInDb(stats);
-	// Start updating stats table
+
+	let profileProms = members.map(member => {
+		return GetProfile(member);
+	});
+
+	let profiles = await Promise.all(profileProms);
+
+	
 
 	// Finish once both updates are finished
 

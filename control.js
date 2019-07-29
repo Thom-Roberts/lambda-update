@@ -10,6 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AWS = __importStar(require("aws-sdk"));
 const ClanRequests_1 = require("./ClanRequests");
 const Stats_1 = require("./Stats");
+const profile_1 = require("./profile");
 AWS.config.update({
     accessKeyId: process.env.accessKeyId,
     secretAccessKey: process.env.secretAccessKey,
@@ -29,7 +30,10 @@ async function main() {
     });
     let stats = await Promise.all(statsProm);
     await UpdateStatsInDb(stats);
-    // Start updating stats table
+    let profileProms = members.map(member => {
+        return profile_1.GetProfile(member);
+    });
+    let profiles = await Promise.all(profileProms);
     // Finish once both updates are finished
     // If there are any errors, throw them
     return;
