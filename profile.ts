@@ -26,7 +26,43 @@ export function GetProfile(member: Member): Promise<Character> {
 			}
 			else {
 				// TODO: Should I be returning an array of characters? No, probably just an array of the character ids, and some 'max' stats across them
-				resolve()
+				let character: Character = {
+					characterId: '0',
+					class: 'Titan',
+					minutesPlayed: 0,
+					emblemLocation: '',
+					currentLightLevel: 0,
+				};
+				let responseObj = temp.Response.characters.data;
+				for(let charId in responseObj) {
+					let charClass: string = '';
+					// If the next character has more time played, then set them up as larger
+					if(parseInt(responseObj[charId].minutesPlayedTotal) > character.minutesPlayed) {
+						switch(responseObj[charId].classHash) {
+							case '2271682572': 
+								charClass = 'Warlock';
+								break;
+							case '3655393761':
+								charClass = 'Titan';
+								break;
+							case '671679327':
+								charClass = 'Hunter';
+								break;
+							default:
+								reject(`Character class hash could not be resolved. Hash given: ${responseObj[charId].classHash}`);
+						}
+						
+						character = {
+							characterId: responseObj[charId].characterId,
+							class: charClass,
+							minutesPlayed: parseInt(responseObj[charId].minutesPlayedTotal),
+							emblemLocation: `https://www.bungie.net${responseObj[charId].emblemBackgroundPath}`,
+							currentLightLevel: responseObj[charId].light,
+						};
+					}
+				}
+
+				resolve(character);
 			}
 		});
 	});
