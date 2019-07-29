@@ -4,6 +4,15 @@ export interface Member {
 	displayName: string;
 }
 
+// Just the most played character
+export interface Character { // Get profile
+	characterIds: string; // Do I even need the other yet?
+	class: string; // Should be Titan, Hunter, or Warlock
+	minutesPlayed: number;
+	emblemLocation: string; // Append the https://www.bungie.net before pushing it up
+	currentLightLevel: number;
+}
+
 export interface Stats {
 	membershipId: string;
 	// Response.mergedAllCharacters.results
@@ -33,3 +42,15 @@ export interface Stats {
 		longestKillSpree: number; //longestKillSpree.basic.value
 	};
 }
+
+/*
+	Maybe we should add some extra stuff to the profile stats, rather than just the historical stats
+	Stuff like:
+		Date last online: GetProfileRequest (component 100)
+		Most played character: GetProfileRequest (component 200)
+			Would need to compare the 'minutesPlayedTotal' between their characters
+			Most played character's emblem: https://www.bungie.net{emblemBackgroundPath} (part of component 200)
+			Most played character's class (component 200) - classHash
+			Most played character's light level (component 200) - light
+		Missing exotics: GetProfileRequest (component 800)
+*/
