@@ -9,6 +9,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = __importStar(require("request"));
 const ClanId = '407685';
+const MemberTypeLookup = {
+    '0': 'None',
+    '1': 'Beginner',
+    '2': 'Member',
+    '3': 'Admin',
+    '4': 'Acting Founder',
+    '5': 'Founder',
+};
 function GetClanMembers() {
     return new Promise((resolve, reject) => {
         const options = {
@@ -32,6 +40,7 @@ function GetClanMembers() {
                         'membershipId': val['destinyUserInfo']['membershipId'],
                         'membershipType': val['destinyUserInfo']['membershipType'],
                         'displayName': val['destinyUserInfo']['displayName'],
+                        'clanMemberType': val['memberType'],
                     });
                 }
             });

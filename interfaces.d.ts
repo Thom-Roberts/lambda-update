@@ -2,6 +2,7 @@ export interface Member {
 	membershipId: string;
 	membershipType: number;
 	displayName: string;
+	clanMemberType: string;
 }
 
 export interface Profile {
