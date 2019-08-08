@@ -1,7 +1,7 @@
 import * as request from 'request';
 import { Member } from "./interfaces";
-const ClanId = '407685';
-const MemberTypeLookup = {
+const CLANID = '407685';
+const MEMBERTYPELOOKUP : any = {
 	'0': 'None',
 	'1': 'Beginner',
 	'2': 'Member',
@@ -13,7 +13,7 @@ const MemberTypeLookup = {
 export function GetClanMembers() : Promise<Member[]> {
 	return new Promise((resolve, reject) => {
 		const options = {
-         'url': `https://www.bungie.net/Platform/GroupV2/${ClanId}/Members/`,
+         'url': `https://www.bungie.net/Platform/GroupV2/${CLANID}/Members/`,
          'headers': {
             'x-api-key': process.env.bungieApiKey,
          },
@@ -32,16 +32,19 @@ export function GetClanMembers() : Promise<Member[]> {
 
 			temp['Response']['results'].forEach((val : any) => {
 				if(val.hasOwnProperty('destinyUserInfo')) {
-					
+					// Lookup the string value for the clanMemberType
+					const memberType: number = val['memberType'];
+					const memberTypeValue: string = MEMBERTYPELOOKUP[memberType.toString()];
+
 					members.push({
 						'membershipId': val['destinyUserInfo']['membershipId'],
 						'membershipType': val['destinyUserInfo']['membershipType'],
 						'displayName': val['destinyUserInfo']['displayName'],
-						'clanMemberType': val['memberType'],
+						'clanMemberType': memberTypeValue,
 					});
 				}
 			});
-
+			
 			resolve(members);
 		});
 	});
