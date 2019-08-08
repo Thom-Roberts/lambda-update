@@ -32,6 +32,7 @@ export function GetProfile(member: Member): Promise<Character> {
 					minutesPlayed: 0,
 					emblemLocation: '',
 					currentLightLevel: 0,
+					currentLevel: 0,
 				};
 				let responseObj = temp.Response.characters.data;
 				for(let charId in responseObj) {
@@ -58,6 +59,7 @@ export function GetProfile(member: Member): Promise<Character> {
 							minutesPlayed: parseInt(responseObj[charId].minutesPlayedTotal),
 							emblemLocation: `https://www.bungie.net${responseObj[charId].emblemBackgroundPath}`,
 							currentLightLevel: responseObj[charId].light,
+							currentLevel: responseObj[charId].levelProgression.level,
 						};
 					}
 				}

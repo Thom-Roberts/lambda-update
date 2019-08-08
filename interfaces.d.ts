@@ -16,6 +16,7 @@ export interface Character { // Get profile
 	minutesPlayed: number;
 	emblemLocation: string; // Append the https://www.bungie.net before pushing it up
 	currentLightLevel: number;
+	currentLevel: number;
 }
 
 export interface Stats {
