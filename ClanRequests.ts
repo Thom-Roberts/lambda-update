@@ -41,6 +41,7 @@ export function GetClanMembers() : Promise<Member[]> {
 						'membershipType': val['destinyUserInfo']['membershipType'],
 						'displayName': val['destinyUserInfo']['displayName'],
 						'clanMemberType': memberTypeValue,
+						'onlineStatus': val['isOnline'], 
 					});
 				}
 			});

@@ -3,6 +3,7 @@ export interface Member {
 	membershipType: number;
 	displayName: string;
 	clanMemberType: string;
+	onlineStatus: boolean;
 }
 
 export interface Profile {
