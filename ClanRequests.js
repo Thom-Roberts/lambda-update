@@ -44,6 +44,7 @@ function GetClanMembers() {
                         'membershipType': val['destinyUserInfo']['membershipType'],
                         'displayName': val['destinyUserInfo']['displayName'],
                         'clanMemberType': memberTypeValue,
+                        'onlineStatus': val['isOnline'],
                     });
                 }
             });
