@@ -42,13 +42,31 @@ export interface Stats {
 		timePlayed: string; //secondsPlayed.basic.displayValue
 		timePlayedNumber: number; //secondsPlayed.basic.value
 		deaths: number; //deaths.basic.value
-		bestSingleGameKils: number; //bestSingleGameKills.basic.value
+		bestSingleGameKills: number; //bestSingleGameKills.basic.value
 		opponentsDefeated: number; //opponentsDefeated.basic.value
 		efficiency: string; //efficiency.basic.displayValue
 		kdRatio: string; //killsDeathsRatio.basic.displayValue
 		winLossRatio: string; //winLossRatio.basic.displayValue
 		longestKillSpree: number; //longestKillSpree.basic.value
 	};
+	pveCompetitive?: { // Involves a seperate request, Response.allPvECompetitive.allTime
+		activitesPlayed: number; // activitesEntered.basic.value
+		activitesWon: number; // activitiesWon.basic.value
+		assists: number; // assists.basic.value
+		kills: number; // kills.basic.value
+		killsPerGame: string; // kills.pga.displayValue
+		timePlayed: string; // secondsPlayed.basic.displayValue
+		timePlayedNumber: number; // secondsPlayed.basic.value
+		deaths: number; // deaths.basic.value
+		bestSingleGameKills: number; // bestSingleGameKills.basic.value
+		kdRatio: string; // killsDeathsRatio.basic.displayValue
+		winLossRatio: string; // winLossRatio.basic.displayValue
+		longestKillSpree: number; // longestKillSpree.basic.value
+		invasionKills: number; // invasionKills.basic.value
+		invaderKills: number; // invaderKills.basic.value
+		motesDeposited: number; // motesDeposited.basic.value
+		motesLost: number; // motesLost.basic.value
+	}
 }
 
 /*
