@@ -58,7 +58,7 @@ export function GetHistoricalStats(member: Member): Promise<Stats> {
 						timePlayed: values.allPvP.allTime.secondsPlayed.basic.displayValue,
 						timePlayedNumber: values.allPvP.allTime.secondsPlayed.basic.value,
 						deaths: values.allPvP.allTime.deaths.basic.value,
-						bestSingleGameKils: values.allPvP.allTime.bestSingleGameKills.basic.value,
+						bestSingleGameKills: values.allPvP.allTime.bestSingleGameKills.basic.value,
 						opponentsDefeated: values.allPvP.allTime.opponentsDefeated.basic.value,
 						efficiency: values.allPvP.allTime.efficiency.basic.displayValue,
 						kdRatio: values.allPvP.allTime.killsDeathsRatio.basic.displayValue,
