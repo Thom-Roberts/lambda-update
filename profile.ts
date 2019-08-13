@@ -33,6 +33,7 @@ export function GetProfile(member: Member): Promise<Character> {
 					emblemLocation: '',
 					currentLightLevel: 0,
 					currentLevel: 0,
+					characters: null,
 				};
 				let responseObj = temp.Response.characters.data;
 				for(let charId in responseObj) {
@@ -60,10 +61,12 @@ export function GetProfile(member: Member): Promise<Character> {
 							emblemLocation: `https://www.bungie.net${responseObj[charId].emblemBackgroundPath}`,
 							currentLightLevel: responseObj[charId].light,
 							currentLevel: responseObj[charId].levelProgression.level,
+							characters: null, // Will be set at the end
 						};
 					}
 				}
 
+				character.characters = temp.Response.profile.data.characterIds; // Set all the character ids once we've decided on the best character
 				resolve(character);
 			}
 		});
