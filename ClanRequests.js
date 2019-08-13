@@ -53,3 +53,4 @@ function GetClanMembers() {
     });
 }
 exports.GetClanMembers = GetClanMembers;
+//# sourceMappingURL=ClanRequests.js.map
