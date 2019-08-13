@@ -8,7 +8,8 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Launch Program",
-			"program": "${file}"
+			"program": "${workspaceFolder}/control.ts",
+			"outFiles": ["${workspaceFolder}/*.js"]
 		}
 	]
 }
