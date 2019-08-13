@@ -55,7 +55,7 @@ export interface Stats {
 
 export interface PveCompetitive {
 	activitesPlayed: number; // activitesEntered.basic.value
-	activitesWon: number; // activitiesWon.basic.value
+	activitiesWon: number; // activitiesWon.basic.value
 	assists: number; // assists.basic.value
 	kills: number; // kills.basic.value
 	killsPerGame: string; // kills.pga.displayValue
