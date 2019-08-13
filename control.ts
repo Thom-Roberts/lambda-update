@@ -33,6 +33,10 @@ export async function main(): Promise<void> {
 		let stats = await Promise.all(statsProms);
 		let mpCharacters = await Promise.all(mpCharacterProms);	
 
+		// Get the gambit stats as well
+		
+
+
 		await UpdateStatsInDb(stats, mpCharacters);
 
 		// Finish once both updates are finished
@@ -115,6 +119,8 @@ function SendUpdateStatsInDb(tableName: string, stats: Stats[], mpCharacter: Cha
 				[tableName]: 
 					stats.map((stat, index) => {
 						let temp: any = {};
+						delete mpCharacter[index].characters; // Removed the characters array from the most played character stats
+
 						temp.membershipId = {
 							S: stat.membershipId.toString()
 						};
@@ -129,7 +135,7 @@ function SendUpdateStatsInDb(tableName: string, stats: Stats[], mpCharacter: Cha
 							};
 						}
 						temp.mostPlayedCharacter = {
-							S: JSON.stringify(mpCharacter[index])
+							S: JSON.stringify(mpCharacter[index]),
 						}
 
 						return {
