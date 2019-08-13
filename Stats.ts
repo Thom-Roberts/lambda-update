@@ -1,6 +1,25 @@
 import * as request from "request";
 import { Member, Stats, Character, PveCompetitive } from "./Interfaces";
 
+const INITIALEMPTYVALUE: PveCompetitive = {
+	activitesPlayed: 0,
+	activitiesWon: 0,
+	assists: 0,
+	kills: 0,
+	killsPerGame: '0',
+	timePlayed: '0',
+	timePlayedNumber: 0,
+	deaths: 0,
+	bestSingleGameKills: 0,
+	kdRatio: '0',
+	winLossRatio: '0',
+	longestKillSpree: 0,
+	invasionKills: 0,
+	invaderKills: 0,
+	motesDeposited: 0,
+	motesLost: 0,
+};
+
 /**
  * Gets stats for one member
  * @param member 
@@ -74,49 +93,10 @@ export function GetHistoricalStats(member: Member): Promise<Stats> {
 }
 
 export async function GetGambitStats(member: Member, character: Character): Promise<PveCompetitive> {
-	const INITIALEMPTYVALUE: PveCompetitive = {
-		activitesPlayed: 0,
-		activitesWon: 0,
-		assists: 0,
-		kills: 0,
-		killsPerGame: '0',
-		timePlayed: '0',
-		timePlayedNumber: 0,
-		deaths: 0,
-		bestSingleGameKills: 0,
-		kdRatio: '0',
-		winLossRatio: '0',
-		longestKillSpree: 0,
-		invasionKills: 0,
-		invaderKills: 0,
-		motesDeposited: 0,
-		motesLost: 0,
-	};
-
-	
 	if(character.characters !== null) {
 		let temp = character.characters.map((characterId) => {
 			return GetGambitForCharacter(member, characterId);
 		});
-
-		const INITIALEMPTYVALUE: PveCompetitive = {
-			activitesPlayed: 0,
-			activitesWon: 0,
-			assists: 0,
-			kills: 0,
-			killsPerGame: '0',
-			timePlayed: '0',
-			timePlayedNumber: 0,
-			deaths: 0,
-			bestSingleGameKills: 0,
-			kdRatio: '0',
-			winLossRatio: '0',
-			longestKillSpree: 0,
-			invasionKills: 0,
-			invaderKills: 0,
-			motesDeposited: 0,
-			motesLost: 0,
-		};
 
 		let allCharacterStats = await Promise.all(temp);
 		let returnVal =  allCharacterStats.reduce((prev, curr) => {
@@ -127,7 +107,7 @@ export async function GetGambitStats(member: Member, character: Character): Prom
 			// TODO: Convert the timePlayedNumber addition to get a string for timePlayed
 			return {
 				activitesPlayed: prev.activitesPlayed + curr.activitesPlayed,
-				activitesWon: prev.activitesWon + curr.activitesWon,
+				activitiesWon: prev.activitiesWon + curr.activitiesWon,
 				assists: prev.assists + curr.assists,
 				kills: prev.kills + curr.kills,
 				killsPerGame: (PREV_KPG + CURR_KPG).toString(),
@@ -145,11 +125,22 @@ export async function GetGambitStats(member: Member, character: Character): Prom
 			};
 		}, INITIALEMPTYVALUE);
 
-		returnVal.timePlayed = GetStringForTimePlayed(returnVal.timePlayedNumber); // TODO: Update
-		returnVal.kdRatio = (returnVal.kills / returnVal.deaths).toFixed(2);
-		returnVal.winLossRatio = (parseFloat(returnVal.winLossRatio) / allCharacterStats.length).toString();
-	
-		return returnVal;
+		// TODO: Divide kills per game by num characters
+		// TODO: Divide by characters who actually have stats in gambit (some are equal to INITIALEMPTY VALUE)
+		// If the number of non-empty characters is 0, then just return the initial empty value
+		// allCharacterStats[1] === INITIALEMPTYVALUE TODO: Use this to calculate that divide by number
+		const DIVIDE_BY_NUMBER = GetNumActiveCharacters(allCharacterStats);
+		if(DIVIDE_BY_NUMBER === 0) {
+			return INITIALEMPTYVALUE;
+		}
+		else {
+			returnVal.timePlayed = GetStringForTimePlayed(returnVal.timePlayedNumber); // TODO: Update
+			returnVal.kdRatio = (returnVal.kills / returnVal.deaths).toFixed(2);
+			returnVal.winLossRatio = (parseFloat(returnVal.winLossRatio) / DIVIDE_BY_NUMBER).toFixed(2).toString();
+			returnVal.killsPerGame = (parseFloat(returnVal.killsPerGame) / DIVIDE_BY_NUMBER).toFixed(2).toString();
+
+			return returnVal;
+		}
 	}
 	else {
 		return INITIALEMPTYVALUE;
@@ -164,7 +155,7 @@ function GetGambitForCharacter(member: Member, characterId: string): Promise<Pve
 		const OPTIONS = {
 			url: BASE_URL,
 			headers: {
-				"x-api-key": process.env.bungieApiKey,
+				"x-api-key": '7771c372dbe34060a7bbb10b3016ecfe',
 			},
 		};
 
@@ -179,31 +170,37 @@ function GetGambitForCharacter(member: Member, characterId: string): Promise<Pve
 				let temp = JSON.parse(body);
 				let easierTemp = temp.Response.allPvECompetitive.allTime;
 
-				resolve({
-					activitesPlayed: easierTemp.activitiesEntered.basic.value,
-					activitesWon: easierTemp.activitesWon.basic.value,
-					assists: easierTemp.assists.basic.value,
-					kills: easierTemp.kills.basic.value,
-					killsPerGame: easierTemp.kills.pga.displayValue,
-					timePlayed: easierTemp.secondsPlayed.basic.displayValue,
-					timePlayedNumber: easierTemp.secondsPlayed.basic.value,
-					deaths: easierTemp.deaths.basic.value,
-					bestSingleGameKills: easierTemp.bestSingleGameKills.basic.value,
-					kdRatio: easierTemp.killsDeathsRatio.basic.displayValue,
-					winLossRatio: easierTemp.winLossRatio.basic.displayValue,
-					longestKillSpree: easierTemp.longestKillSpree.basic.value,
-					invasionKills: easierTemp.invasionKills.basic.value,
-					invaderKills: easierTemp.invaderKills.basic.value,
-					motesDeposited: easierTemp.motesDeposited.basic.value,
-					motesLost: easierTemp.motesLost.basic.value,
-				});
+				if(easierTemp === undefined) {
+					resolve(INITIALEMPTYVALUE);
+				}
+				else {
+					resolve({
+						activitesPlayed: easierTemp.activitiesEntered.basic.value,
+						activitiesWon: easierTemp.activitiesWon.basic.value,
+						assists: easierTemp.assists.basic.value,
+						kills: easierTemp.kills.basic.value,
+						killsPerGame: easierTemp.kills.pga.displayValue,
+						timePlayed: easierTemp.secondsPlayed.basic.displayValue,
+						timePlayedNumber: easierTemp.secondsPlayed.basic.value,
+						deaths: easierTemp.deaths.basic.value,
+						bestSingleGameKills: easierTemp.bestSingleGameKills.basic.value,
+						kdRatio: easierTemp.killsDeathsRatio.basic.displayValue,
+						winLossRatio: easierTemp.winLossRatio.basic.displayValue,
+						longestKillSpree: easierTemp.longestKillSpree.basic.value,
+						invasionKills: easierTemp.invasionKills.basic.value,
+						invaderKills: easierTemp.invaderKills.basic.value,
+						motesDeposited: easierTemp.motesDeposited.basic.value,
+						motesLost: easierTemp.motesLost.basic.value,
+					});
+				}
 			}
 		});
 	});
 }
 
 // Calculate the days and hours for displaying
-function GetStringForTimePlayed(minutesPlayed: number): string {
+function GetStringForTimePlayed(secondsPlayed: number): string {
+	let minutesPlayed = secondsPlayed / 60;
 	let hoursPlayed = minutesPlayed / 60;
 	let numDays = Math.floor(hoursPlayed / 24);
 	let numHours = Math.floor(hoursPlayed - (numDays * 24));
@@ -213,4 +210,13 @@ function GetStringForTimePlayed(minutesPlayed: number): string {
 	}
 
 	return `${numDays}d ${numHours}h`;
+}
+
+function GetNumActiveCharacters(allCharacterStats: PveCompetitive[]): number {
+	return allCharacterStats.reduce((prev, curr) => {
+		if(curr !== INITIALEMPTYVALUE) {
+			prev += 1;
+		}
+		return prev;
+	}, 0);
 }
