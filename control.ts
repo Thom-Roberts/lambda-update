@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { GetClanMembers } from "./ClanRequests";
-import { GetHistoricalStats } from "./Stats";
+import { GetHistoricalStats, GetGambitStats } from "./Stats";
 import { GetProfile } from "./profile";
 import { Member, Stats, Character } from "./interfaces";
 
@@ -19,6 +19,7 @@ export async function main(): Promise<void> {
 		let members = await GetClanMembers();
 
 		await UpdateMembersInDb(members);
+		
 		// Start updating users table
 		// Start collecting stats for each user
 		let statsProms = members.map(member => {
@@ -34,8 +35,12 @@ export async function main(): Promise<void> {
 		let mpCharacters = await Promise.all(mpCharacterProms);	
 
 		// Get the gambit stats as well
-		
+		let temp = members.map((member, index) => {
+			return GetGambitStats(member, mpCharacters[index]);
+		});
 
+		let temp2 = await Promise.all(temp);
+		// TODO: Pass temp2 with other stats
 
 		await UpdateStatsInDb(stats, mpCharacters);
 

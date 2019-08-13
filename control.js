@@ -34,6 +34,12 @@ async function main() {
         // TODO: Combine these two promise.all statements
         let stats = await Promise.all(statsProms);
         let mpCharacters = await Promise.all(mpCharacterProms);
+        // Get the gambit stats as well
+        let temp = members.map((member, index) => {
+            return Stats_1.GetGambitStats(member, mpCharacters[index]);
+        });
+        let temp2 = await Promise.all(temp);
+        // TODO: Pass temp2 with other stats
         await UpdateStatsInDb(stats, mpCharacters);
         // Finish once both updates are finished
         // If there are any errors, throw them
@@ -104,6 +110,7 @@ function SendUpdateStatsInDb(tableName, stats, mpCharacter) {
             'RequestItems': {
                 [tableName]: stats.map((stat, index) => {
                     let temp = {};
+                    delete mpCharacter[index].characters; // Removed the characters array from the most played character stats
                     temp.membershipId = {
                         S: stat.membershipId.toString()
                     };
@@ -118,7 +125,7 @@ function SendUpdateStatsInDb(tableName, stats, mpCharacter) {
                         };
                     }
                     temp.mostPlayedCharacter = {
-                        S: JSON.stringify(mpCharacter[index])
+                        S: JSON.stringify(mpCharacter[index]),
                     };
                     return {
                         'PutRequest': {
@@ -186,3 +193,4 @@ async function AddMember() {
     });
 }
 exports.AddMember = AddMember;
+//# sourceMappingURL=control.js.map
