@@ -41,6 +41,11 @@ export async function main(): Promise<void> {
 
 		let temp2 = await Promise.all(temp);
 		// TODO: Pass temp2 with other stats
+		stats = stats.map((stat, index) => {
+			stat.pveCompetitive = temp2[index];
+			return stat;
+		});
+
 
 		await UpdateStatsInDb(stats, mpCharacters);
 
@@ -131,12 +136,17 @@ function SendUpdateStatsInDb(tableName: string, stats: Stats[], mpCharacter: Cha
 						};
 						if(Object.prototype.hasOwnProperty.call(stat, 'pve')) {
 							temp.pve = {
-								S: JSON.stringify(stat.pve)
+								S: JSON.stringify(stat.pve),
 							};
 						}
 						if(Object.prototype.hasOwnProperty.call(stat, 'pvp')) {
 							temp.pvp = {
-								S: JSON.stringify(stat.pvp)
+								S: JSON.stringify(stat.pvp),
+							};
+						}
+						if(Object.prototype.hasOwnProperty.call(stat, 'pveCompetitive')) {
+							temp.pveCompetitive = {
+								S: JSON.stringify(stat.pveCompetitive),
 							};
 						}
 						temp.mostPlayedCharacter = {
