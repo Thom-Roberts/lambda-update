@@ -103,8 +103,6 @@ async function GetGambitStats(member, character) {
         let returnVal = allCharacterStats.reduce((prev, curr) => {
             const PREV_KPG = parseFloat(prev.killsPerGame);
             const CURR_KPG = parseFloat(curr.killsPerGame);
-            const PREV_WLR = parseFloat(prev.winLossRatio);
-            const CURR_WLR = parseFloat(curr.winLossRatio);
             return {
                 activitesPlayed: prev.activitesPlayed + curr.activitesPlayed,
                 activitiesWon: prev.activitiesWon + curr.activitiesWon,
@@ -116,7 +114,7 @@ async function GetGambitStats(member, character) {
                 deaths: prev.deaths + curr.deaths,
                 bestSingleGameKills: prev.bestSingleGameKills + curr.bestSingleGameKills,
                 kdRatio: '',
-                winLossRatio: (PREV_WLR + CURR_WLR).toString(),
+                winLossRatio: '',
                 longestKillSpree: prev.longestKillSpree + curr.longestKillSpree,
                 invasionKills: prev.invasionKills + curr.invasionKills,
                 invaderKills: prev.invaderKills + curr.invaderKills,
@@ -135,7 +133,7 @@ async function GetGambitStats(member, character) {
         else {
             returnVal.timePlayed = GetStringForTimePlayed(returnVal.timePlayedNumber); // TODO: Update
             returnVal.kdRatio = (returnVal.kills / returnVal.deaths).toFixed(2);
-            returnVal.winLossRatio = (parseFloat(returnVal.winLossRatio) / DIVIDE_BY_NUMBER).toFixed(2).toString(); // Convert the numbers to fixed 2 decimals to string
+            returnVal.winLossRatio = (returnVal.activitiesWon / returnVal.activitesPlayed).toFixed(2).toString(); // Convert the numbers to fixed 2 decimals to string
             returnVal.killsPerGame = (parseFloat(returnVal.killsPerGame) / DIVIDE_BY_NUMBER).toFixed(2).toString();
             return returnVal;
         }
@@ -179,8 +177,8 @@ function GetGambitForCharacter(member, characterId) {
                         timePlayedNumber: easierTemp.secondsPlayed.basic.value,
                         deaths: easierTemp.deaths.basic.value,
                         bestSingleGameKills: easierTemp.bestSingleGameKills.basic.value,
-                        kdRatio: easierTemp.killsDeathsRatio.basic.displayValue,
-                        winLossRatio: easierTemp.winLossRatio.basic.value,
+                        kdRatio: '',
+                        winLossRatio: '',
                         longestKillSpree: easierTemp.longestKillSpree.basic.value,
                         invasionKills: easierTemp.invasionKills.basic.value,
                         invaderKills: easierTemp.invaderKills.basic.value,
