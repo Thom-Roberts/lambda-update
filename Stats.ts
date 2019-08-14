@@ -104,7 +104,7 @@ export async function GetGambitStats(member: Member, character: Character): Prom
 			const CURR_KPG = parseFloat(curr.killsPerGame);
 			const PREV_WLR = parseFloat(prev.winLossRatio);
 			const CURR_WLR = parseFloat(curr.winLossRatio);
-			// TODO: Convert the timePlayedNumber addition to get a string for timePlayed
+
 			return {
 				activitesPlayed: prev.activitesPlayed + curr.activitesPlayed,
 				activitiesWon: prev.activitiesWon + curr.activitiesWon,
@@ -116,7 +116,7 @@ export async function GetGambitStats(member: Member, character: Character): Prom
 				deaths: prev.deaths + curr.deaths,
 				bestSingleGameKills: prev.bestSingleGameKills + curr.bestSingleGameKills,
 				kdRatio: '', // Updated later
-				winLossRatio: (PREV_WLR + CURR_WLR).toString(), // Updated later
+				winLossRatio: (PREV_WLR + CURR_WLR).toString(),
 				longestKillSpree: prev.longestKillSpree + curr.longestKillSpree,
 				invasionKills: prev.invasionKills + curr.invasionKills,
 				invaderKills: prev.invaderKills + curr.invaderKills,
@@ -136,7 +136,7 @@ export async function GetGambitStats(member: Member, character: Character): Prom
 		else {
 			returnVal.timePlayed = GetStringForTimePlayed(returnVal.timePlayedNumber); // TODO: Update
 			returnVal.kdRatio = (returnVal.kills / returnVal.deaths).toFixed(2);
-			returnVal.winLossRatio = (parseFloat(returnVal.winLossRatio) / DIVIDE_BY_NUMBER).toFixed(2).toString();
+			returnVal.winLossRatio = (parseFloat(returnVal.winLossRatio) / DIVIDE_BY_NUMBER).toFixed(2).toString(); // Convert the numbers to fixed 2 decimals to string
 			returnVal.killsPerGame = (parseFloat(returnVal.killsPerGame) / DIVIDE_BY_NUMBER).toFixed(2).toString();
 
 			return returnVal;
@@ -185,7 +185,7 @@ function GetGambitForCharacter(member: Member, characterId: string): Promise<Pve
 						deaths: easierTemp.deaths.basic.value,
 						bestSingleGameKills: easierTemp.bestSingleGameKills.basic.value,
 						kdRatio: easierTemp.killsDeathsRatio.basic.displayValue,
-						winLossRatio: easierTemp.winLossRatio.basic.displayValue,
+						winLossRatio: easierTemp.winLossRatio.basic.value,
 						longestKillSpree: easierTemp.longestKillSpree.basic.value,
 						invasionKills: easierTemp.invasionKills.basic.value,
 						invaderKills: easierTemp.invaderKills.basic.value,
@@ -206,7 +206,7 @@ function GetStringForTimePlayed(secondsPlayed: number): string {
 	let numHours = Math.floor(hoursPlayed - (numDays * 24));
 
 	if(numDays === 0 && numHours === 0) {
-		return `${minutesPlayed} minutes`;
+		return `${minutesPlayed.toFixed(2).toString()} minutes`;
 	}
 
 	return `${numDays}d ${numHours}h`;
