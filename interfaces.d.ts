@@ -25,7 +25,7 @@ export interface Character { // Get profile
 export interface Stats {
 	membershipId: string;
 	// Response.mergedAllCharacters.results
-	pve?: PatchVendor;
+	pve?: pve;
 	pvp?: pvp;
 	pveCompetitive?: PveCompetitive;
 }
