@@ -204,7 +204,7 @@ function GetStringForTimePlayed(secondsPlayed: number): string {
 	let numHours = Math.floor(hoursPlayed - (numDays * 24));
 
 	if(numDays === 0 && numHours === 0) {
-		return `${minutesPlayed.toFixed(2).toString()} minutes`;
+		return `${minutesPlayed.toFixed(0)} minutes`;
 	}
 
 	return `${numDays}d ${numHours}h`;
