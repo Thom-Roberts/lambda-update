@@ -25,32 +25,36 @@ export interface Character { // Get profile
 export interface Stats {
 	membershipId: string;
 	// Response.mergedAllCharacters.results
-	pve?: { //allPvE.allTime
-		activitiesCleared: number; //activitiesCleared.basic.value
-		assists: number; //assists.basic.value
-		kills: number; //kills.basic.value
-		timePlayed: string; //secondsPlayed.basic.displayValue
-		timePlayedNumber: number; // secondsPlayed.basic.value
-		deaths: number; //deaths.basic.value
-		kdRatio: string; //killsDeathsRatio.basic.displayValue
-		publicEventsCompleted: number; //publicEventsCompleted.basic.value
-	};
-	pvp?: { //allPvP.allTime
-		activitiesPlayed: number; //activitesEntered.basic.value
-		activitiesWon: number; //activitesWon.basic.value
-		assists: number; //assists.basic.value
-		kills: number; //kills.basic.value
-		timePlayed: string; //secondsPlayed.basic.displayValue
-		timePlayedNumber: number; //secondsPlayed.basic.value
-		deaths: number; //deaths.basic.value
-		bestSingleGameKills: number; //bestSingleGameKills.basic.value
-		opponentsDefeated: number; //opponentsDefeated.basic.value
-		efficiency: string; //efficiency.basic.displayValue
-		kdRatio: string; //killsDeathsRatio.basic.displayValue
-		winLossRatio: string; //winLossRatio.basic.displayValue
-		longestKillSpree: number; //longestKillSpree.basic.value
-	};
+	pve?: PatchVendor;
+	pvp?: pvp;
 	pveCompetitive?: PveCompetitive;
+}
+
+export interface pve {
+	activitiesCleared: number; //activitiesCleared.basic.value
+	assists: number; //assists.basic.value
+	kills: number; //kills.basic.value
+	timePlayed: string; //secondsPlayed.basic.displayValue
+	timePlayedNumber: number; // secondsPlayed.basic.value
+	deaths: number; //deaths.basic.value
+	kdRatio: string; //killsDeathsRatio.basic.displayValue
+	publicEventsCompleted: number; //publicEventsCompleted.basic.value
+}
+
+export interface pvp {
+	activitiesPlayed: number; //activitesEntered.basic.value
+	activitiesWon: number; //activitesWon.basic.value
+	assists: number; //assists.basic.value
+	kills: number; //kills.basic.value
+	timePlayed: string; //secondsPlayed.basic.displayValue
+	timePlayedNumber: number; //secondsPlayed.basic.value
+	deaths: number; //deaths.basic.value
+	bestSingleGameKills: number; //bestSingleGameKills.basic.value
+	opponentsDefeated: number; //opponentsDefeated.basic.value
+	efficiency: string; //efficiency.basic.displayValue
+	kdRatio: string; //killsDeathsRatio.basic.displayValue
+	winLossRatio: string; //winLossRatio.basic.displayValue
+	longestKillSpree: number; //longestKillSpree.basic.value
 }
 
 export interface PveCompetitive {
