@@ -45,6 +45,7 @@ function GetClanMembers() {
                         'displayName': val['destinyUserInfo']['displayName'],
                         'clanMemberType': memberTypeValue,
                         'onlineStatus': val['isOnline'],
+                        'dateLastOn': new Date(parseInt(val['lastOnlineStatusChange']) * 1000),
                     });
                 }
             });
