@@ -132,7 +132,7 @@ async function GetGambitStats(member, character) {
         }
         else {
             returnVal.timePlayed = GetStringForTimePlayed(returnVal.timePlayedNumber);
-            returnVal.timePlayedNumber = Math.round(returnVal.timePlayedNumber / 60); // Converting to minutes instead of seconds for later use
+            returnVal.timePlayedNumber = Math.round(returnVal.timePlayedNumber);
             returnVal.kdRatio = (returnVal.kills / returnVal.deaths).toFixed(2);
             returnVal.winLossRatio = (returnVal.activitiesWon / returnVal.activitesPlayed).toFixed(2).toString(); // Convert the numbers to fixed 2 decimals to string
             returnVal.killsPerGame = (parseFloat(returnVal.killsPerGame) / DIVIDE_BY_NUMBER).toFixed(2).toString();
