@@ -16,7 +16,7 @@ function GetProfile(member) {
                 'x-api-key': process.env.bungieApiKey,
             }
         };
-        request.get(options, (err, res, body) => {
+        request.get(options, async (err, res, body) => {
             if (err) {
                 reject(err);
             }
@@ -69,6 +69,8 @@ function GetProfile(member) {
                         };
                     }
                 }
+                let temp2 = await GetCharacterTime(member, character.characterId);
+                character.minutesPlayed = temp2 / 60;
                 character.characters = temp.Response.profile.data.characterIds; // Set all the character ids once we've decided on the best character
                 resolve(character);
             }
@@ -76,4 +78,31 @@ function GetProfile(member) {
     });
 }
 exports.GetProfile = GetProfile;
+function GetCharacterTime(member, characterId) {
+    return new Promise((resolve, reject) => {
+        const OPTIONS = {
+            url: `https://www.bungie.net/Platform/Destiny2/${member.membershipType}/Account/${member.membershipId}/Stats/`,
+            headers: {
+                'x-api-key': process.env.bungieApiKey,
+            },
+        };
+        request.get(OPTIONS, (err, res, body) => {
+            if (err) {
+                reject(err);
+            }
+            if (res.statusCode !== 200) {
+                reject(`Failed to resolve status code: ${res.body}`);
+            }
+            else {
+                let temp = JSON.parse(body);
+                let characters = temp.Response.characters;
+                characters.forEach(character => {
+                    if (character.characterId === characterId) {
+                        resolve(character.merged.allTime.secondsPlayed.basic.value);
+                    }
+                });
+            }
+        });
+    });
+}
 //# sourceMappingURL=profile.js.map
