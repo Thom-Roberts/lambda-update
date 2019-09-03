@@ -33,19 +33,37 @@ function GetClanMembers() {
             if (res.statusCode !== 200) {
                 reject(`Could not resolve status code: ${res.statusCode}`);
             }
-            let temp = JSON.parse(body);
-            temp['Response']['results'].forEach((val) => {
-                if (val.hasOwnProperty('destinyUserInfo')) {
+            let clanResponse = JSON.parse(body);
+            clanResponse['Response']['results'].forEach((clanMember) => {
+                if (clanMember.hasOwnProperty('destinyUserInfo')) {
                     // Lookup the string value for the clanMemberType
-                    const memberType = val['memberType'];
+                    const memberType = clanMember['memberType'];
                     const memberTypeValue = MEMBERTYPELOOKUP[memberType.toString()];
+                    let isPrimary;
+                    let bungieMembershipId = `Not available for account: ${clanMember['destinyUserInfo']['displayName']}`;
+                    // Not a cross save account
+                    if (clanMember['destinyUserInfo']['crossSaveOverride'] === 0) {
+                        isPrimary = true;
+                    }
+                    else if (clanMember['destinyUserInfo']['crossSaveOverride'] === clanMember['destinyUserInfo']['membershipType']) {
+                        isPrimary = true;
+                    }
+                    else {
+                        isPrimary = false;
+                    }
+                    // I swear this is only required for some people (namely, Mdawg12319)
+                    if (Object.prototype.hasOwnProperty.call(clanMember, 'bungieNetUserInfo')) {
+                        bungieMembershipId = clanMember['bungieNetUserInfo']['membershipId'];
+                    }
                     members.push({
-                        'membershipId': val['destinyUserInfo']['membershipId'],
-                        'membershipType': val['destinyUserInfo']['membershipType'],
-                        'displayName': val['destinyUserInfo']['displayName'],
+                        'bungieMembershipId': bungieMembershipId,
+                        'membershipId': clanMember['destinyUserInfo']['membershipId'],
+                        'membershipType': clanMember['destinyUserInfo']['membershipType'],
+                        'displayName': clanMember['destinyUserInfo']['displayName'],
                         'clanMemberType': memberTypeValue,
-                        'onlineStatus': val['isOnline'],
-                        'dateLastOn': new Date(parseInt(val['lastOnlineStatusChange']) * 1000),
+                        'onlineStatus': clanMember['isOnline'],
+                        'isPrimary': isPrimary,
+                        'dateLastOn': new Date(parseInt(clanMember['lastOnlineStatusChange']) * 1000),
                     });
                 }
             });

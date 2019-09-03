@@ -1,9 +1,11 @@
 export interface Member {
+	bungieMembershipId: string;
 	membershipId: string;
 	membershipType: number;
 	displayName: string;
 	clanMemberType: string;
 	onlineStatus: boolean;
+	isPrimary: boolean;
 	dateLastOn: Date;
 }
 
